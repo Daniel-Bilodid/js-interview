@@ -3,6 +3,14 @@
  * Ділимо по кінцях речень, далі групуємо ~по 2 речення в абзац.
  */
 export function toParagraphs(text: string, perPara = 2): string[] {
+  // якщо в тексті є переноси рядка — вони й задають абзаци
+  if (text.includes('\n')) {
+    return text
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean)
+  }
+
   const sentences = text
     .split(/(?<=[.!?])\s+(?=[А-ЯЇІЄҐA-Z0-9])/)
     .map((s) => s.trim())
