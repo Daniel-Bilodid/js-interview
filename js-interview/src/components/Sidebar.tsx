@@ -15,10 +15,11 @@ export function Sidebar({ tab, learnedSet, onToggleLearned }: Props) {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return tab.topics
-    return tab.topics.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q),
+    // шукаємо по всіх текстових полях теми — обох форматів
+    return tab.topics.filter((t) =>
+      [t.title, t.definition, t.why, t.simple, t.description]
+        .filter(Boolean)
+        .some((text) => text!.toLowerCase().includes(q)),
     )
   }, [tab.topics, query])
 

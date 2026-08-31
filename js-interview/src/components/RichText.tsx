@@ -37,6 +37,17 @@ const KEYWORDS = new Set([
   'props', 'state', 'ref', 'refs', 'key', 'children', 'setState',
   'render', 'memo', 'forwardRef', 'createContext', 'createPortal',
   'StrictMode', 'Suspense', 'Fragment', 'ErrorBoundary',
+  // React Native: компоненти та API
+  'View', 'Text', 'Image', 'ScrollView', 'FlatList', 'SectionList',
+  'VirtualizedList', 'FlashList', 'Pressable', 'TouchableOpacity',
+  'TextInput', 'SafeAreaView', 'Modal', 'StyleSheet', 'Animated',
+  'Dimensions', 'Platform', 'PanResponder', 'LayoutAnimation',
+  'InteractionManager', 'NativeModules', 'TurboModuleRegistry',
+  'AsyncStorage', 'UIView', 'RecyclerView', 'UITableView', 'UILabel',
+  // React Native: внутрішня будова
+  'Hermes', 'Yoga', 'Fabric', 'JSI', 'TurboModule', 'TurboModules',
+  'Codegen', 'Metro', 'Flexbox', 'Reanimated', 'bridge', 'bridgeless',
+  'worklet', 'ipa', 'apk',
   // TypeScript
   'any', 'unknown', 'never', 'void', 'interface', 'enum', 'namespace',
   'declare', 'readonly', 'keyof', 'infer', 'satisfies', 'as', 'is',

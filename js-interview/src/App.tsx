@@ -8,11 +8,11 @@ import {
   useParams,
 } from 'react-router-dom'
 import { tabs, getTab } from './data'
-import type { Tab } from './types'
+import type { Depth, Tab } from './types'
 import { Sidebar } from './components/Sidebar'
 import { TopicView } from './components/TopicView'
 import { PracticeView } from './components/PracticeView'
-import { useStringSet } from './hooks/useLocalStorage'
+import { useLocalStorage, useStringSet } from './hooks/useLocalStorage'
 import { useTheme } from './hooks/useTheme'
 
 function Header({
@@ -122,10 +122,14 @@ function TabLayout({
   learnedSet,
   toggleLearned,
   dark,
+  depth,
+  setDepth,
 }: {
   learnedSet: Set<string>
   toggleLearned: (id: string) => void
   dark: boolean
+  depth: Depth
+  setDepth: (d: Depth) => void
 }) {
   const { lang, topicId } = useParams()
   const tab = getTab(lang ?? '')
@@ -159,6 +163,8 @@ function TabLayout({
             tab={tab}
             learnedSet={learnedSet}
             onToggleLearned={toggleLearned}
+            depth={depth}
+            onChangeDepth={setDepth}
           />
         ) : topic ? (
           <TopicView
@@ -167,6 +173,8 @@ function TabLayout({
             learned={learnedSet.has(topic.id)}
             onToggleLearned={toggleLearned}
             dark={dark}
+            depth={depth}
+            onChangeDepth={setDepth}
           />
         ) : (
           <Welcome tab={tab} learnedSet={learnedSet} />
@@ -179,6 +187,8 @@ function TabLayout({
 export default function App() {
   const { theme, toggle } = useTheme()
   const { set: learnedSet, toggle: toggleLearned } = useStringSet('learned')
+  // глибина розкриття тем — спільна для сайту, памʼятається між сесіями
+  const [depth, setDepth] = useLocalStorage<Depth>('depth', 'learn')
   const dark = theme === 'dark'
 
   return (
@@ -194,6 +204,8 @@ export default function App() {
                 learnedSet={learnedSet}
                 toggleLearned={toggleLearned}
                 dark={dark}
+                depth={depth}
+                setDepth={setDepth}
               />
             }
           />
@@ -204,6 +216,8 @@ export default function App() {
                 learnedSet={learnedSet}
                 toggleLearned={toggleLearned}
                 dark={dark}
+                depth={depth}
+                setDepth={setDepth}
               />
             }
           />
