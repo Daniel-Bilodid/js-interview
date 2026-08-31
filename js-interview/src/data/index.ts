@@ -153,15 +153,23 @@ const TS_ORDER = [
 const RN_ORDER = [
   // Що це і як влаштоване
   'rn-what-is',
+  'rn-expo-vs-cli',
   'rn-threads',
   'rn-bridge',
   'rn-new-architecture',
   'rn-hermes',
+  'rn-metro',
+  'rn-flipper',
   // Рендер і верстка
   'rn-layout-yoga',
   // Практика
   'rn-lists',
   'rn-animations',
+  'rn-navigation',
+  'rn-webview',
+  'rn-deep-linking',
+  'rn-push-notifications',
+  'rn-offline',
   'rn-native-modules',
   'rn-performance',
   'rn-deploy',
