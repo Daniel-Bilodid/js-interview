@@ -2,6 +2,7 @@ import type { Tab, Topic } from '../types'
 import { javascriptTopics } from './javascript'
 import { typescriptTopics } from './typescript'
 import { reactTopics } from './react'
+import { reactNativeTopics } from './reactnative'
 import { architectureTopics } from './architecture'
 
 /*
@@ -146,6 +147,25 @@ const TS_ORDER = [
   'ts-strict-mode',
 ]
 
+// Від «що це взагалі таке» до внутрішньої будови й продуктивності.
+// Нову тему достатньо дописати в reactnative.ts — без id у цьому списку
+// вона стане в кінець вкладки.
+const RN_ORDER = [
+  // Що це і як влаштоване
+  'rn-what-is',
+  'rn-threads',
+  'rn-bridge',
+  'rn-new-architecture',
+  'rn-hermes',
+  // Рендер і верстка
+  'rn-layout-yoga',
+  // Практика
+  'rn-lists',
+  'rn-animations',
+  'rn-native-modules',
+  'rn-performance',
+]
+
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
 // показуємо їх у вкладці TypeScript.
 const MOVED_TO_TS = new Set(['utility-types', 'ts-access-modifiers'])
@@ -167,6 +187,11 @@ export const tabs: Tab[] = [
   { key: 'javascript', label: 'JavaScript', topics: orderTopics(jsTopics, JS_ORDER) },
   { key: 'typescript', label: 'TypeScript', topics: orderTopics(tsTopics, TS_ORDER) },
   { key: 'react', label: 'React', topics: orderTopics(reactTopics, REACT_ORDER) },
+  {
+    key: 'react-native',
+    label: 'React Native',
+    topics: orderTopics(reactNativeTopics, RN_ORDER),
+  },
   // порядок тем вкладки — порядок в architecture.ts
   { key: 'architecture', label: 'Архітектура', topics: architectureTopics },
 ]

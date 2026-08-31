@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { Tab, Topic } from '../types'
+import type { Depth, Tab, Topic } from '../types'
+import { DepthSwitch } from './DepthSwitch'
 import { RichText } from './RichText'
 import { toParagraphs } from '../utils/text'
+import { sectionsFor } from '../utils/topic'
 
 type Props = {
   tab: Tab
   learnedSet: Set<string>
   onToggleLearned: (id: string) => void
+  depth: Depth
+  onChangeDepth: (d: Depth) => void
 }
 
 type Mode = 'all' | 'unlearned'
@@ -21,7 +25,13 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-export function PracticeView({ tab, learnedSet, onToggleLearned }: Props) {
+export function PracticeView({
+  tab,
+  learnedSet,
+  onToggleLearned,
+  depth,
+  onChangeDepth,
+}: Props) {
   const [mode, setMode] = useState<Mode | null>(null)
   const [queue, setQueue] = useState<Topic[]>([])
   const [total, setTotal] = useState(0)
@@ -101,6 +111,9 @@ export function PracticeView({ tab, learnedSet, onToggleLearned }: Props) {
             Картки, які «не знав», повернуться в кінець колоди.
           </p>
         </div>
+        <div className="w-full max-w-md">
+          <DepthSwitch depth={depth} onChange={onChangeDepth} />
+        </div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={() => start('all')}
@@ -162,6 +175,7 @@ export function PracticeView({ tab, learnedSet, onToggleLearned }: Props) {
 
   // ——— Картка ———
   const learned = learnedSet.has(current.id)
+  const s = sectionsFor(current, depth)
 
   return (
     <div className="thin-scroll h-full overflow-y-auto">
@@ -205,30 +219,85 @@ export function PracticeView({ tab, learnedSet, onToggleLearned }: Props) {
           </div>
         ) : (
           <>
-            {/* Відповідь */}
-            <div className="rounded-2xl border border-sky-200/70 bg-linear-to-br from-sky-50 to-white p-5 dark:border-sky-900/40 dark:from-sky-950/30 dark:to-slate-900/20">
-              <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">
-                <span>💡</span> Відповідь
-              </p>
-              <div className="space-y-3">
-                {toParagraphs(current.description).map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-[15px] leading-7 text-slate-700 dark:text-slate-200"
-                  >
-                    <RichText text={p} />
-                  </p>
-                ))}
+            {/* Ідеальна відповідь — те, що варто сказати дослівно */}
+            {s.definition && (
+              <div className="rounded-2xl border border-indigo-200/70 bg-linear-to-br from-indigo-50 to-white p-5 dark:border-indigo-900/40 dark:from-indigo-950/30 dark:to-slate-900/20">
+                <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                  <span>🎯</span>
+                  {current.definition ? 'Ідеальна відповідь' : 'Коротко'}
+                </p>
+                <p className="text-[15px] font-medium leading-7 text-slate-800 dark:text-slate-100">
+                  <RichText text={s.definition} />
+                </p>
               </div>
-            </div>
+            )}
 
-            {current.gotchas.length > 0 && (
+            {s.why && (
+              <div className="rounded-2xl border border-violet-200/70 bg-violet-50/40 p-5 dark:border-violet-900/40 dark:bg-violet-950/15">
+                <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+                  <span>❓</span> Навіщо це існує
+                </p>
+                <div className="space-y-3">
+                  {toParagraphs(s.why).map((p, i) => (
+                    <p
+                      key={i}
+                      className="text-[15px] leading-7 text-slate-700 dark:text-slate-200"
+                    >
+                      <RichText text={p} />
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {s.simple && (
+              <div className="rounded-2xl border border-sky-200/70 bg-linear-to-br from-sky-50 to-white p-5 dark:border-sky-900/40 dark:from-sky-950/30 dark:to-slate-900/20">
+                <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">
+                  <span>💡</span> Простими словами
+                </p>
+                <div className="space-y-3">
+                  {toParagraphs(s.simple).map((p, i) => (
+                    <p
+                      key={i}
+                      className="text-[15px] leading-7 text-slate-700 dark:text-slate-200"
+                    >
+                      <RichText text={p} />
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {s.related.length > 0 && (
+              <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/40 p-5 dark:border-emerald-900/40 dark:bg-emerald-950/15">
+                <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                  <span>🔗</span> Супутні теми
+                </p>
+                <div className="space-y-3">
+                  {s.related.map((r, i) => (
+                    <div key={i}>
+                      <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                        {r.title}
+                      </p>
+                      <p className="text-[15px] leading-7 text-slate-700 dark:text-slate-200">
+                        <RichText text={r.text} />
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {s.seniorNotes.length > 0 && (
               <div className="rounded-2xl border border-amber-200/70 bg-amber-50/50 p-5 dark:border-amber-900/40 dark:bg-amber-950/15">
                 <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
-                  <span>⚠️</span> Не забути про підводні камені
+                  <span>🎖</span>
+                  {current.seniorNotes
+                    ? 'Не забути про senior-нюанси'
+                    : 'Не забути про підводні камені'}
                 </p>
                 <ul className="list-disc space-y-1.5 pl-5">
-                  {current.gotchas.map((g, i) => (
+                  {s.seniorNotes.map((g, i) => (
                     <li
                       key={i}
                       className="text-sm leading-6 text-slate-700 dark:text-slate-200"

@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import type { Tab, Topic } from '../types'
+import type { Depth, Tab, Topic } from '../types'
 import { CodeBlock } from './CodeBlock'
+import { DepthSwitch } from './DepthSwitch'
 import { RichText } from './RichText'
 import { toParagraphs } from '../utils/text'
+import { sectionsFor } from '../utils/topic'
 
 type Props = {
   tab: Tab
@@ -11,6 +13,36 @@ type Props = {
   learned: boolean
   onToggleLearned: (id: string) => void
   dark: boolean
+  depth: Depth
+  onChangeDepth: (d: Depth) => void
+}
+
+type Tone = 'sky' | 'amber' | 'indigo' | 'emerald' | 'violet'
+
+const TONES: Record<Tone, { badge: string; card: string }> = {
+  sky: {
+    badge: 'bg-sky-100 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400',
+    card: 'border-sky-200/70 bg-sky-50/40 dark:border-sky-900/40 dark:bg-sky-950/15',
+  },
+  amber: {
+    badge: 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400',
+    card: 'border-amber-200/70 bg-amber-50/50 dark:border-amber-900/40 dark:bg-amber-950/15',
+  },
+  indigo: {
+    badge:
+      'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400',
+    card: 'border-indigo-200/70 bg-linear-to-br from-indigo-50 to-white dark:border-indigo-900/40 dark:from-indigo-950/30 dark:to-slate-900/20',
+  },
+  emerald: {
+    badge:
+      'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400',
+    card: 'border-emerald-200/70 bg-emerald-50/40 dark:border-emerald-900/40 dark:bg-emerald-950/15',
+  },
+  violet: {
+    badge:
+      'bg-violet-100 text-violet-600 dark:bg-violet-950/60 dark:text-violet-400',
+    card: 'border-violet-200/70 bg-violet-50/40 dark:border-violet-900/40 dark:bg-violet-950/15',
+  },
 }
 
 function SectionHeader({
@@ -22,17 +54,12 @@ function SectionHeader({
   icon: string
   title: string
   subtitle?: string
-  tone: 'sky' | 'amber'
+  tone: Tone
 }) {
-  const toneMap = {
-    sky: 'bg-sky-100 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400',
-    amber:
-      'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400',
-  }
   return (
     <div className="mb-4 flex items-center gap-3">
       <span
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${toneMap[tone]}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${TONES[tone].badge}`}
       >
         {icon}
       </span>
@@ -46,6 +73,22 @@ function SectionHeader({
           </p>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Текстовий блок: ріже суцільний текст на абзаци і підсвічує код у тексті. */
+function Prose({ text }: { text: string }) {
+  return (
+    <div className="space-y-3">
+      {toParagraphs(text).map((p, i) => (
+        <p
+          key={i}
+          className="text-[15px] leading-7 text-slate-700 dark:text-slate-200"
+        >
+          <RichText text={p} />
+        </p>
+      ))}
     </div>
   )
 }
@@ -76,7 +119,15 @@ function LearnedButton({
   )
 }
 
-export function TopicView({ tab, topic, learned, onToggleLearned, dark }: Props) {
+export function TopicView({
+  tab,
+  topic,
+  learned,
+  onToggleLearned,
+  dark,
+  depth,
+  onChangeDepth,
+}: Props) {
   const navigate = useNavigate()
   const scrollRef = useRef<HTMLElement>(null)
 
@@ -84,7 +135,7 @@ export function TopicView({ tab, topic, learned, onToggleLearned, dark }: Props)
   const prev = index > 0 ? tab.topics[index - 1] : undefined
   const next = index < tab.topics.length - 1 ? tab.topics[index + 1] : undefined
 
-  const descParas = toParagraphs(topic.description)
+  const s = sectionsFor(topic, depth)
 
   // при зміні теми повертаємо скрол нагору
   useEffect(() => {
@@ -106,7 +157,6 @@ export function TopicView({ tab, topic, learned, onToggleLearned, dark }: Props)
   return (
     <article ref={scrollRef} className="thin-scroll h-full overflow-y-auto">
       <div className="mx-auto max-w-3xl space-y-10 px-6 py-10 sm:px-10">
-        {/* Заголовок + опис */}
         <header className="space-y-5">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -129,57 +179,117 @@ export function TopicView({ tab, topic, learned, onToggleLearned, dark }: Props)
             />
           </div>
 
-          <div className="rounded-2xl border border-sky-200/70 bg-linear-to-br from-sky-50 to-white p-5 dark:border-sky-900/40 dark:from-sky-950/30 dark:to-slate-900/20">
-            <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-sky-600 dark:text-sky-400">
-              <span>💡</span> Простими словами
-            </p>
-            <div className="space-y-3">
-              {descParas.map((p, i) => (
-                <p
-                  key={i}
-                  className="text-[15px] leading-7 text-slate-700 dark:text-slate-200"
-                >
-                  <RichText text={p} />
-                </p>
-              ))}
+          <DepthSwitch depth={depth} onChange={onChangeDepth} />
+
+          {/* 🎯 Ідеальне визначення — те, що дослівно кажеш інтервʼюеру */}
+          {s.definition && (
+            <div className={`rounded-2xl border p-5 ${TONES.indigo.card}`}>
+              <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                <span>🎯</span>
+                {topic.definition ? 'Ідеальне визначення' : 'Коротко'}
+              </p>
+              <p className="text-[15px] font-medium leading-7 text-slate-800 dark:text-slate-100">
+                <RichText text={s.definition} />
+              </p>
             </div>
-          </div>
+          )}
         </header>
 
-        {/* Приклади коду */}
-        <section>
-          <SectionHeader icon="💻" title="Приклади коду" tone="sky" />
-          <div className="space-y-4">
-            {topic.codeExamples.map((ex, i) => (
-              <CodeBlock key={i} label={ex.label} code={ex.code} dark={dark} />
-            ))}
-          </div>
-        </section>
+        {/* ❓ Навіщо це існує — вхід у тему для тих, хто бачить її вперше */}
+        {s.why && (
+          <section>
+            <SectionHeader
+              icon="❓"
+              title="Навіщо це існує"
+              subtitle="яку проблему вирішує"
+              tone="violet"
+            />
+            <div className={`rounded-2xl border p-5 ${TONES.violet.card}`}>
+              <Prose text={s.why} />
+            </div>
+          </section>
+        )}
 
-        {/* Підводні камені */}
-        <section>
-          <SectionHeader
-            icon="⚠️"
-            title="Підводні камені"
-            subtitle="часті помилки та каверзні запитання"
-            tone="amber"
-          />
-          <ul className="space-y-2.5">
-            {topic.gotchas.map((g, i) => (
-              <li
-                key={i}
-                className="flex gap-3 rounded-xl border border-amber-200/70 bg-amber-50/50 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/15"
-              >
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-700 dark:bg-amber-900/60 dark:text-amber-300">
-                  {i + 1}
-                </span>
-                <span className="text-[15px] leading-7 text-slate-700 dark:text-slate-200">
-                  <RichText text={g} />
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* 💡 Простими словами */}
+        {s.simple && (
+          <section>
+            <SectionHeader
+              icon="💡"
+              title="Простими словами"
+              subtitle="суть без складних слів"
+              tone="sky"
+            />
+            <div className={`rounded-2xl border p-5 ${TONES.sky.card}`}>
+              <Prose text={s.simple} />
+            </div>
+          </section>
+        )}
+
+        {/* 🔗 Супутні теми */}
+        {s.related.length > 0 && (
+          <section>
+            <SectionHeader
+              icon="🔗"
+              title="Супутні теми"
+              subtitle="без цього тема не розкривається до кінця"
+              tone="emerald"
+            />
+            <div className="space-y-3">
+              {s.related.map((r, i) => (
+                <div
+                  key={i}
+                  className={`rounded-xl border p-4 ${TONES.emerald.card}`}
+                >
+                  <p className="mb-1.5 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                    {r.title}
+                  </p>
+                  <p className="text-[15px] leading-7 text-slate-700 dark:text-slate-200">
+                    <RichText text={r.text} />
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 💻 Приклади */}
+        {s.codeExamples.length > 0 && (
+          <section>
+            <SectionHeader icon="💻" title="Приклади" tone="sky" />
+            <div className="space-y-4">
+              {s.codeExamples.map((ex, i) => (
+                <CodeBlock key={i} label={ex.label} code={ex.code} dark={dark} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 🎖 Senior-нюанси */}
+        {s.seniorNotes.length > 0 && (
+          <section>
+            <SectionHeader
+              icon="🎖"
+              title={topic.seniorNotes ? 'Senior-нюанси' : 'Підводні камені'}
+              subtitle="те, що відрізняє senior від middle"
+              tone="amber"
+            />
+            <ul className="space-y-2.5">
+              {s.seniorNotes.map((g, i) => (
+                <li
+                  key={i}
+                  className={`flex gap-3 rounded-xl border px-4 py-3 ${TONES.amber.card}`}
+                >
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-700 dark:bg-amber-900/60 dark:text-amber-300">
+                    {i + 1}
+                  </span>
+                  <span className="text-[15px] leading-7 text-slate-700 dark:text-slate-200">
+                    <RichText text={g} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Підсумок + навігація */}
         <footer className="space-y-6 border-t border-slate-200 pt-8 dark:border-slate-800">
