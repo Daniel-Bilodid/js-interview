@@ -14,7 +14,7 @@ type Props = {
   onChangeDepth: (d: Depth) => void
 }
 
-type Mode = 'all' | 'unlearned'
+type Mode = 'all' | 'unlearned' | 'learned'
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -40,13 +40,16 @@ export function PracticeView({
   const [revealed, setRevealed] = useState(false)
 
   const unlearnedCount = tab.topics.filter((t) => !learnedSet.has(t.id)).length
+  const learnedCount = tab.topics.length - unlearnedCount
 
   const start = useCallback(
     (m: Mode) => {
       const pool =
         m === 'unlearned'
           ? tab.topics.filter((t) => !learnedSet.has(t.id))
-          : tab.topics
+          : m === 'learned'
+            ? tab.topics.filter((t) => learnedSet.has(t.id))
+            : tab.topics
       setMode(m)
       setQueue(shuffle(pool))
       setTotal(pool.length)
@@ -127,6 +130,13 @@ export function PracticeView({
             className="rounded-full border border-indigo-300 px-6 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-950/30"
           >
             Лише невивчені ({unlearnedCount})
+          </button>
+          <button
+            onClick={() => start('learned')}
+            disabled={learnedCount === 0}
+            className="rounded-full border border-emerald-300 px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-950/30"
+          >
+            Лише вивчені ({learnedCount})
           </button>
         </div>
         <Link
