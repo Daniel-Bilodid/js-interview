@@ -164,6 +164,7 @@ const RN_ORDER = [
   'rn-animations',
   'rn-native-modules',
   'rn-performance',
+  'rn-deploy',
 ]
 
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
