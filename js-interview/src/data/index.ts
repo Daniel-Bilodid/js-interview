@@ -167,12 +167,21 @@ const RN_ORDER = [
   'rn-animations',
   'rn-navigation',
   'rn-webview',
+  'rn-splash-screen',
   'rn-deep-linking',
   'rn-push-notifications',
   'rn-offline',
   'rn-native-modules',
+  'rn-autolinking',
+  'rn-cocoapods',
   'rn-performance',
+  'rn-env-config',
+  'rn-build-variants',
+  'rn-flavor-sourcesets',
+  'rn-proguard',
   'rn-deploy',
+  'rn-staged-rollout',
+  'rn-crash-analytics',
 ]
 
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
