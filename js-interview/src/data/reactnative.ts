@@ -472,6 +472,26 @@ import Row from "./Row";
 import Row from Platform.OS === "ios" ? "./RowIOS" : "./RowAndroid";`,
       },
     ],
+    steps: [
+      {
+        text: 'Імпортуй getDefaultConfig із expo/metro-config чи @react-native/metro-config і отримай базовий конфіг.',
+        code: `const { getDefaultConfig } = require("expo/metro-config");
+const config = getDefaultConfig(__dirname);`,
+      },
+      {
+        text: 'Перевизнач config.resolver.resolveRequest, щоб перехопити конкретні імпорти власною логікою.',
+      },
+      {
+        text: 'Усередині завжди виклич оригінальний context.resolveRequest для решти модулів — інакше зламаєш стандартну резолюцію.',
+        code: `return context.resolveRequest(context, moduleName, platform);`,
+      },
+      {
+        text: 'Експортуй змінений config замість дефолтного через module.exports.',
+      },
+      {
+        text: 'Перезапусти Metro з прапорцем --reset-cache, щоб він підхопив новий конфіг.',
+      },
+    ],
     seniorNotes: [
       'Fast Refresh зберігає стан хуків тільки для файлів, що експортують виключно функціональні компоненти. Клас-компонент або домішаний неreact-експорт у файлі змушує Metro робити повний перезапуск екрана замість часткового оновлення.',
       'Metro не компілює в байткод Hermes сам — він лише готує JS-бандл і source map, а компіляцію в байткод виконує окремий інструмент hermesc під час нативної збірки застосунку.',
@@ -530,6 +550,26 @@ import Row from Platform.OS === "ios" ? "./RowIOS" : "./RowAndroid";`,
     plugins: isTest ? [] : ["react-native-reanimated/plugin"],
   };
 };`,
+      },
+    ],
+    steps: [
+      {
+        text: 'Встанови metro-react-native-babel-preset як основний пресет у presets.',
+        code: `presets: ["module:metro-react-native-babel-preset"]`,
+      },
+      {
+        text: 'Додай module-resolver у plugins і опиши потрібні аліаси в опції alias.',
+        code: `["module-resolver", { alias: { "@components": "./src/components" } }]`,
+      },
+      {
+        text: 'Продублюй ті самі аліаси в paths файлу tsconfig.json, щоб tsc не підсвічував помилку.',
+      },
+      {
+        text: 'Постав react-native-reanimated/plugin останнім елементом масиву plugins.',
+        code: `plugins: ["module-resolver", "react-native-reanimated/plugin"]`,
+      },
+      {
+        text: 'Після зміни конфіга перезапусти Metro з прапорцем --reset-cache.',
       },
     ],
     seniorNotes: [
@@ -591,6 +631,28 @@ module.exports = {
     ]),
   },
 };`,
+      },
+    ],
+    steps: [
+      {
+        text: 'Обчисли абсолютний шлях до кореня монорепи через path.resolve і додай його в config.watchFolders.',
+        code: `const monorepoRoot = path.resolve(__dirname, "../..");
+config.watchFolders = [monorepoRoot];`,
+      },
+      {
+        text: 'Отримай базовий конфіг через getDefaultConfig(__dirname) із @react-native/metro-config.',
+      },
+      {
+        text: 'Заповни config.resolver.extraNodeModules, вказавши абсолютний шлях до єдиної копії React застосунку.',
+        code: `config.resolver.extraNodeModules = {
+  react: path.resolve(__dirname, "node_modules/react"),
+};`,
+      },
+      {
+        text: 'Якщо Metro падає з duplicate module name, додай blockList з exclusionList, що виключає зайві вкладені node_modules.',
+      },
+      {
+        text: 'Перезапусти Metro з прапорцем --reset-cache, щоб він підхопив зміни в конфізі.',
       },
     ],
     seniorNotes: [
@@ -1154,6 +1216,24 @@ async function switchToDarkIcon() {
   android:targetActivity=".MainActivity" />`,
       },
     ],
+    steps: [
+      {
+        text: 'Заздалегідь задекларуй кожен варіант іконки: на iOS у CFBundleAlternateIcons в Info.plist, на Android — activity-alias у маніфесті.',
+      },
+      {
+        text: 'На iOS виклич UIApplication.shared.setAlternateIconName з іменем потрібного варіанта.',
+        code: `await setAppIcon("Dark");`,
+      },
+      {
+        text: 'На Android увімкни потрібний activity-alias і одночасно вимкни решту через PackageManager.setComponentEnabledSetting.',
+      },
+      {
+        text: 'Переконайся, що застосунок активний на передньому плані — з фонового завдання перемикання іконки не спрацює.',
+      },
+      {
+        text: 'Зачекай на системний діалог підтвердження на iOS чи короткий релонч лаунчера на Android — це очікувана поведінка.',
+      },
+    ],
     seniorNotes: [
       'Adaptive icon на Android з API 26 обовʼязково складається з окремих foreground і background шарів у mipmap-anydpi-v26, а не з одного растрового файлу.',
       'PackageManager.setComponentEnabledSetting на Android має вмикати рівно один activity-alias і вимикати решту одночасно — залишені ввімкненими кілька аліасів одразу показують на лаунчері дублікати іконки застосунку.',
@@ -1621,6 +1701,26 @@ module.exports = {
 };`,
       },
     ],
+    steps: [
+      {
+        text: 'Створи файл react-native.config.js у корені проєкту, якщо його ще немає.',
+      },
+      {
+        text: 'Якщо нативні проєкти лежать не в стандартних ios/android, задай project.ios.sourceDir і project.android.sourceDir.',
+        code: `project: { ios: { sourceDir: "./mobile/ios" } }`,
+      },
+      {
+        text: 'Перелічи директорії зі шрифтами в ключі assets як масив шляхів.',
+        code: `assets: ["./src/assets/fonts"]`,
+      },
+      {
+        text: 'Запусти npx react-native-asset, щоб скопіювати шрифти в нативні проєкти.',
+      },
+      {
+        text: 'У монорепі додай reactNativePath, що вказує на реальне розташування пакета react-native.',
+        code: `reactNativePath: path.resolve(__dirname, "../../node_modules/react-native")`,
+      },
+    ],
     seniorNotes: [
       'project.ios.sourceDir і project.android.sourceDir потрібні лише тоді, коли нативні проєкти не лежать у стандартних ios/ і android/ поруч із package.json — типово для монорепи чи кастомної білд-структури.',
       'assets у react-native.config.js читає лише команда react-native-asset, а не Metro чи автолінкінг; додавання нового шрифту в цей масив нічого не робить, поки команду не запустити явно.',
@@ -1673,6 +1773,27 @@ pod install --repo-update
 
 # на Apple Silicon для старих подів без arm64-збірки:
 # arch -x86_64 pod install`,
+      },
+    ],
+    steps: [
+      {
+        text: 'Перейди в директорію ios і запусти pod deintegrate, щоб прибрати сліди CocoaPods із .xcodeproj.',
+        code: `cd ios
+pod deintegrate`,
+      },
+      {
+        text: 'Видали папку Pods і файл Podfile.lock повністю.',
+        code: `rm -rf Pods Podfile.lock`,
+      },
+      {
+        text: 'Запусти pod install --repo-update, щоб CocoaPods перерахував залежності з нуля.',
+      },
+      {
+        text: 'На Apple Silicon для подів без arm64-збірки додай префікс arch -x86_64 перед командою.',
+        code: `arch -x86_64 pod install`,
+      },
+      {
+        text: 'Завжди відкривай згенерований .xcworkspace, а не .xcodeproj, інакше Xcode не побачить Pods.',
       },
     ],
     seniorNotes: [
@@ -1918,6 +2039,26 @@ import Config from "react-native-config";
 console.log(Config.API_URL); // значення саме з обраного .env-файлу`,
       },
     ],
+    steps: [
+      {
+        text: 'Встанови react-native-config і створи .env, .env.staging, .env.production з потрібними ключами.',
+      },
+      {
+        text: 'Привʼяжи вибір .env-файлу до нативної схеми: product flavor у Gradle на Android, Xcode-схема на iOS.',
+      },
+      {
+        text: 'Запускай збірку з явно вказаною змінною ENVFILE, наприклад ENVFILE=.env.staging.',
+        code: `ENVFILE=.env.staging ./gradlew assembleRelease`,
+      },
+      {
+        text: 'У коді читай значення через імпортований обʼєкт Config, а не через process.env.',
+        code: `import Config from "react-native-config";
+Config.API_URL`,
+      },
+      {
+        text: 'Ніколи не клади секрети в жоден .env-файл — лише публічну конфігурацію.',
+      },
+    ],
     seniorNotes: [
       'react-native-dotenv підставляє значення .env лише як текстовий літерал під час транспіляції Babel, тому воно однакове для всієї збірки й не читається динамічно під час роботи застосунку.',
       'react-native-config читає .env через нативний BuildConfig на Android і Info.plist на iOS, тому значення привʼязане до конкретного нативного product flavor чи Xcode-схеми, а не до одного файлу .env на диску.',
@@ -1984,6 +2125,25 @@ PRODUCT_NAME = MyApp
 // схема "Staging" у Xcode посилається на конфігурацію Staging`,
       },
     ],
+    steps: [
+      {
+        text: 'У android/app/build.gradle оголоси flavorDimensions і додай потрібні productFlavors у блоці android.',
+        code: `flavorDimensions "environment"
+productFlavors { staging { ... } }`,
+      },
+      {
+        text: 'Для кожного флейвора задай applicationIdSuffix і buildConfigField з потрібним значенням, наприклад API_URL.',
+      },
+      {
+        text: 'На iOS створи окремий xcconfig-файл для кожного оточення зі значеннями PRODUCT_BUNDLE_IDENTIFIER і PRODUCT_NAME.',
+      },
+      {
+        text: 'У Xcode створи схему, що посилається на відповідну конфігурацію, і привʼяжи її до потрібного xcconfig.',
+      },
+      {
+        text: 'У коді читай BuildConfig.API_URL на Android чи відповідне значення Info.plist на iOS, а не хардкодь бекенд.',
+      },
+    ],
     seniorNotes: [
       'applicationIdSuffix додає суфікс до базового applicationId лише для конкретного флейвора, тому staging і production з одного проєкту завжди мають різний фінальний ідентифікатор пакета без ручного дублювання конфігурації.',
       'Нативна залежність без варіанта під конкретний флейвор ламає збірку в Gradle, якщо не вказати matchingFallbacks — цей механізм каже, яку версію залежності підставити, коли точного відповідника флейвора немає.',
@@ -2041,6 +2201,23 @@ class AnalyticsModule {
     <!-- дозволи, потрібні лише в production -->
   </application>
 </manifest>`,
+      },
+    ],
+    steps: [
+      {
+        text: 'Створи папку src/<флейвор> поруч із src/main, повторюючи потрібну структуру підпапок java, res чи assets.',
+      },
+      {
+        text: 'Поклади в неї клас із точно таким самим пакетом і іменем, що й у src/main, щоб Gradle підмінив саме його.',
+      },
+      {
+        text: 'Для ресурсів додай файли в src/<флейвор>/res за тією самою структурою, що й у src/main/res.',
+      },
+      {
+        text: 'Якщо потрібен інший AndroidManifest.xml, додай його в src/<флейвор> і познач tools:node для контролю злиття.',
+      },
+      {
+        text: 'Збери саме потрібний build variant — Gradle сам підставить файли з відповідного сорс-сету замість src/main.',
       },
     ],
     seniorNotes: [
@@ -2186,6 +2363,23 @@ platform :ios do
 end`,
       },
     ],
+    steps: [
+      {
+        text: 'Збери релізний JS-бандл і нативний бінарник: AAB на Android, .ipa на iOS.',
+      },
+      {
+        text: 'Підпиши білд — upload-keystore на Android, сертифікат Distribution і provisioning profile на iOS.',
+      },
+      {
+        text: 'Заповни обовʼязкові метадані стору: скриншоти, App Privacy чи Data Safety, декларацію про шифрування.',
+      },
+      {
+        text: 'Завантаж білд у Google Play Console чи App Store Connect і обери трек розкату.',
+      },
+      {
+        text: 'Дочекайся автоматичної перевірки Google чи ручної модерації Apple перед публікацією.',
+      },
+    ],
     seniorNotes: [
       'Google Play з серпня 2021 вимагає завантажувати AAB замість APK для нових застосунків, а сам Play App Signing генерує й підписує фінальні APK під конкретні пристрої.',
       'Втрата upload-keystore без активованого Play App Signing означає, що застосунок під тим самим applicationId більше не можна оновити — доведеться публікувати новий лістинг.',
@@ -2237,6 +2431,26 @@ const info = await checkForUpdate();
 if (info.updateAvailable) {
   // immediate — блокує роботу застосунку до завершення оновлення
   await startUpdate({ updateType: "immediate" });
+}`,
+      },
+    ],
+    steps: [
+      {
+        text: 'У Play Console після завантаження білду вибери відсоток staged rollout замість повного 100%.',
+      },
+      {
+        text: 'Слідкуй за метриками крашів нової версії окремо від попередньої протягом кількох годин.',
+      },
+      {
+        text: 'Якщо крашів забагато — натисни Halt rollout, щоб зупинити нові встановлення без відкату вже оновлених.',
+      },
+      {
+        text: 'На iOS увімкни Phased Release в App Store Connect перед поданням на review.',
+      },
+      {
+        text: 'Для критичних фіксів додай перевірку мінімальної версії через Remote Config і покажи екран примусового оновлення.',
+        code: `if (compareVersions(currentVersion, minSupportedVersion) < 0) {
+  navigation.replace("ForceUpdateScreen");
 }`,
       },
     ],

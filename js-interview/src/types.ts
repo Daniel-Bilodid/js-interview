@@ -7,6 +7,7 @@
  *   simple       — пояснення простими словами, глибоко і без жаргону
  *   related      — супутні теми, без яких основна не розкривається
  *   codeExamples — приклади
+ *   steps        — покрокова інструкція (лише для процедурних тем «як зробити X»)
  *   seniorNotes  — senior-нюанси
  *
  * Старі теми (javascript / typescript / react / architecture) написані в
@@ -49,6 +50,12 @@ export type RelatedNote = {
   text: string
 }
 
+/** Один крок покрокової інструкції: імперативна дія плюс необовʼязковий міні-приклад коду. */
+export type StepItem = {
+  text: string
+  code?: string
+}
+
 export type Topic = {
   id: string
   title: string
@@ -64,6 +71,8 @@ export type Topic = {
   related?: RelatedNote[]
   /** Senior-нюанси: те, що відрізняє senior від middle. */
   seniorNotes?: string[]
+  /** Покрокова інструкція «як зробити X». Лише для процедурних тем. */
+  steps?: StepItem[]
 
   // ——— короткий формат (наявні 111 тем) ———
   /** Стисле пояснення. Використовується як simple, якщо simple немає. */

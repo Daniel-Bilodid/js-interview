@@ -264,6 +264,40 @@ export function TopicView({
           </section>
         )}
 
+        {/* 🪜 Покроково */}
+        {s.steps.length > 0 && (
+          <section>
+            <SectionHeader
+              icon="🪜"
+              title="Покроково"
+              subtitle="практичні кроки для налаштування"
+              tone="indigo"
+            />
+            <ol className="space-y-4">
+              {s.steps.map((step, i) => (
+                <li
+                  key={i}
+                  className={`rounded-xl border p-4 ${TONES.indigo.card}`}
+                >
+                  <div className="flex gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-200 text-xs font-bold text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <p className="text-[15px] leading-7 text-slate-700 dark:text-slate-200">
+                        <RichText text={step.text} />
+                      </p>
+                      {step.code && (
+                        <CodeBlock label="код" code={step.code} dark={dark} />
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
         {/* 🎖 Senior-нюанси */}
         {s.seniorNotes.length > 0 && (
           <section>

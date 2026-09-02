@@ -32,6 +32,7 @@ const LIMITS = {
   related: { count: [2, 4], titleChars: [4, 70], textChars: [120, 550] },
   codeExamples: { count: [1, 3], labelChars: [4, 70], lines: [3, 45] },
   seniorNotes: { count: [4, 6], chars: [80, 400] },
+  steps: { count: [3, 8], textChars: [20, 220], codeLines: [1, 20] },
 }
 
 /** Штампи, що не несуть інформації — у тексті тем їх бути не повинно. */
@@ -166,6 +167,25 @@ function checkTopic(topic, file, orders) {
     const found = FILLER.find((f) => n.toLowerCase().includes(f))
     if (found) err(id, `seniorNotes[${i}]: штамп «${found}»`)
   })
+
+  if (topic.steps !== undefined) {
+    const steps = topic.steps
+    if (!inRange(steps.length, LIMITS.steps.count))
+      err(id, `steps: ${steps.length}, треба ${LIMITS.steps.count.join('-')}`)
+    steps.forEach((st, i) => {
+      if (!inRange((st.text ?? '').length, LIMITS.steps.textChars))
+        err(id, `steps[${i}].text: ${st.text?.length ?? 0} символів, треба ${LIMITS.steps.textChars.join('-')}`)
+      if (st.text?.includes('\n'))
+        err(id, `steps[${i}].text: має бути одним рядком без переносів`)
+      if (st.text?.includes("'") || st.text?.includes('’'))
+        warn(id, `steps[${i}].text: апостроф має бути ʼ (U+02BC)`)
+      if (st.code !== undefined) {
+        const lines = st.code.split('\n').length
+        if (!inRange(lines, LIMITS.steps.codeLines))
+          err(id, `steps[${i}].code: ${lines} рядків, треба ${LIMITS.steps.codeLines.join('-')}`)
+      }
+    })
+  }
 
   if (topic.gotchas) warn(id, 'gotchas разом із seniorNotes — прибери gotchas, воно для старого формату')
   if (topic.description) warn(id, 'description разом із simple — прибери description, воно для старого формату')

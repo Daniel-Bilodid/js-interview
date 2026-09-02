@@ -1,11 +1,11 @@
-import type { Depth, RelatedNote, Topic } from '../types'
+import type { Depth, RelatedNote, StepItem, Topic } from '../types'
 import { toParagraphs } from './text'
 
 /**
  * Що саме показувати для теми на обраному рівні глибини.
  *
  *   🔁 refresh — визначення + senior-нюанси
- *   📖 learn   — плюс пояснення простими словами і приклади коду
+ *   📖 learn   — плюс пояснення простими словами, приклади коду й покрокова інструкція
  *   🌱 deep    — плюс «навіщо це існує» і супутні теми
  *
  * Теми старого формату (description + gotchas) підставляються автоматично:
@@ -19,6 +19,7 @@ export type TopicSections = {
   related: RelatedNote[]
   seniorNotes: string[]
   codeExamples: Topic['codeExamples']
+  steps: StepItem[]
 }
 
 export function sectionsFor(topic: Topic, depth: Depth): TopicSections {
@@ -35,5 +36,6 @@ export function sectionsFor(topic: Topic, depth: Depth): TopicSections {
     related: full ? (topic.related ?? []) : [],
     seniorNotes: topic.seniorNotes ?? topic.gotchas ?? [],
     codeExamples: short ? [] : topic.codeExamples,
+    steps: short ? [] : (topic.steps ?? []),
   }
 }
