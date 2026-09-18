@@ -1,6 +1,6 @@
 ---
 name: add-topic
-description: Додає нову тему для підготовки до співбесіди у застосунок js-interview — у розгорнутому форматі (definition / why / simple / related / codeExamples / steps / seniorNotes), вставляє її у правильний файл даних, реєструє в масиві порядку і проганяє валідатор формату. Використовуй, коли користувач просить додати, написати або згенерувати тему чи питання по будь-якій технології (React Native, JS, TS, React, архітектура).
+description: Додає нову тему для підготовки до співбесіди у застосунок js-interview — у розгорнутому форматі (definition / why / simple / related / codeExamples / steps / seniorNotes), вставляє її у правильний файл даних, реєструє в масиві порядку і проганяє валідатор формату. Використовуй, коли користувач просить додати, написати або згенерувати тему чи питання по будь-якій технології (React Native, JS, TS, React, Next.js, архітектура).
 ---
 
 # Додавання теми
@@ -9,7 +9,7 @@ description: Додає нову тему для підготовки до сп�
 
 `/add-topic [вкладка] <тема>[; <тема>; ...]`
 
-- `вкладка` — необовʼязковий перший токен: `react-native` (або `rn`), `javascript` (`js`), `typescript` (`ts`), `react`, `architecture`. Якщо не вказано — **`react-native`**.
+- `вкладка` — необовʼязковий перший токен: `react-native` (або `rn`), `javascript` (`js`), `typescript` (`ts`), `react`, `nextjs` (`next`), `architecture`. Якщо не вказано — **`react-native`**.
 - Кілька тем розділяються `;` — тоді обробляй їх послідовно, повністю завершуючи кожну.
 
 Приклади:
@@ -25,6 +25,7 @@ description: Додає нову тему для підготовки до сп�
 | javascript | `js-interview/src/data/javascript.ts` | `JS_ORDER` |
 | typescript | `js-interview/src/data/typescript.ts` | `TS_ORDER` |
 | react | `js-interview/src/data/react.ts` | `REACT_ORDER` |
+| nextjs | `js-interview/src/data/nextjs.ts` | `NEXTJS_ORDER` |
 | architecture | `js-interview/src/data/architecture.ts` | — (порядок за файлом) |
 
 Усі команди запускай із `js-interview/`.
@@ -37,7 +38,7 @@ description: Додає нову тему для підготовки до сп�
 cd js-interview && grep -h "    id: '" src/data/*.ts | tr -d " " | sort
 ```
 
-Придумай `id`: латиниця, нижній регістр, дефіси. Для react-native — з префіксом `rn-`. Id має бути унікальним **серед усіх вкладок**, а не лише у своєму файлі. Id `practice` заборонений.
+Придумай `id`: латиниця, нижній регістр, дефіси. Для react-native — з префіксом `rn-`, для nextjs — з префіксом `next-`. Id має бути унікальним **серед усіх вкладок**, а не лише у своєму файлі. Id `practice` заборонений.
 
 **Крок 2. Прочитай еталон.** Один раз за сесію прочитай `.claude/skills/add-topic/reference.md` — там повний зразок теми і правила письма. Пиши за ним, не за загальним уявленням.
 

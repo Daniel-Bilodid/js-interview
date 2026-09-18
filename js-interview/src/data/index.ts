@@ -3,6 +3,7 @@ import { javascriptTopics } from './javascript'
 import { typescriptTopics } from './typescript'
 import { reactTopics } from './react'
 import { reactNativeTopics } from './reactnative'
+import { nextjsTopics } from './nextjs'
 import { architectureTopics } from './architecture'
 
 /*
@@ -220,6 +221,56 @@ const RN_ORDER = [
   'rn-crash-analytics',
 ]
 
+// Від основ роутингу й рендерингу до продуктивності та деплою.
+// Нову тему достатньо дописати в nextjs.ts — без id у цьому списку
+// вона стане в кінець вкладки.
+const NEXTJS_ORDER = [
+  // Основи
+  'next-what-is-and-why',
+  'next-app-vs-pages-router',
+  // Server і Client Components: механіка межі
+  'next-server-vs-client-component',
+  'next-use-client-module-graph',
+  'next-use-client-still-ssr',
+  'next-serialization-boundary-limits',
+  'next-server-components-as-children',
+  'next-use-client-bundle-size',
+  // Стратегії рендерингу
+  'next-ssr-ssg-isr-csr',
+  'next-prerendering-vs-dynamic',
+  // Build, виконання й повний цикл запиту
+  'next-build',
+  'next-execution-phases',
+  'next-cookies-headers-rendering-impact',
+  'next-static-to-dynamic-bailout',
+  // RSC Payload, гідратація і повний цикл першого завантаження
+  'next-rsc-payload',
+  'next-request-lifecycle',
+  'next-first-load-html-rsc-js',
+  'next-hydration-selective-mismatch',
+  'next-hydration-errors-diagnosis',
+  // Просунуті теми рендерингу
+  'next-server-rendering-vs-rsc',
+  'next-partial-prerendering',
+  'next-static-plus-personalized-content',
+  'next-rendering-strategy-choice',
+  // Кешування
+  'next-caching-layers-overview',
+  'next-old-cache-model-layers',
+  'next-fetch-default-behavior-15-16',
+  'next-stale-while-revalidate',
+  'next-cache-components-enable',
+  'next-use-cache-vs-react-cache',
+  'next-cachelife-cachetag-cachekey',
+  'next-revalidatepath-revalidatetag-updatetag',
+  'next-personalized-data-caching-leak',
+  'next-multi-instance-cache-invalidation',
+  // Архітектура застосунку
+  'next-large-app-architecture',
+  'next-bff',
+  'next-when-not-to-use',
+]
+
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
 // показуємо їх у вкладці TypeScript.
 const MOVED_TO_TS = new Set(['utility-types', 'ts-access-modifiers'])
@@ -246,6 +297,7 @@ export const tabs: Tab[] = [
     label: 'React Native',
     topics: orderTopics(reactNativeTopics, RN_ORDER),
   },
+  { key: 'nextjs', label: 'Next.js', topics: orderTopics(nextjsTopics, NEXTJS_ORDER) },
   // порядок тем вкладки — порядок в architecture.ts
   { key: 'architecture', label: 'Архітектура', topics: architectureTopics },
 ]

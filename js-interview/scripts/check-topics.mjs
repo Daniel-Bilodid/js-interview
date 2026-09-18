@@ -22,6 +22,7 @@ const FILES = {
   'typescript.ts': 'TS_ORDER',
   'react.ts': 'REACT_ORDER',
   'reactnative.ts': 'RN_ORDER',
+  'nextjs.ts': 'NEXTJS_ORDER',
   'architecture.ts': null,
 }
 
