@@ -54,6 +54,16 @@ const KEYWORDS = new Set([
   'type', 'generic', 'Partial', 'Required', 'Pick', 'Omit', 'Record',
   'Readonly', 'Exclude', 'Extract', 'ReturnType', 'Awaited',
   'NonNullable', 'Parameters', 'tsconfig',
+  // SQL
+  'SELECT', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'FULL', 'OUTER', 'CROSS',
+  'UNION', 'INTERSECT', 'EXCEPT', 'WHERE', 'HAVING', 'ORDER', 'LIMIT',
+  'OFFSET', 'INSERT', 'UPDATE', 'DELETE', 'EXPLAIN', 'ANALYZE', 'VACUUM',
+  'ACID', 'COUNT', 'DISTINCT', 'NULL', 'PostgreSQL', 'MySQL', 'InnoDB',
+  'MVCC', 'SERIALIZABLE', 'Redis',
+  // Node.js і бекенд
+  'Transform', 'Readable', 'Writable', 'Duplex', 'pipeline', 'pipe',
+  'BullMQ', 'RabbitMQ', 'Piscina', 'Kafka', 'libuv', 'objectMode',
+  'backpressure', 'highWaterMark', 'Celery', 'Sidekiq',
 ])
 
 // слова-кандидати (латиниця), ланцюжки з крапкою, виклики fn() та оператори

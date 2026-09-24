@@ -90,6 +90,8 @@ export type TabKey =
   | 'react-native'
   | 'nextjs'
   | 'architecture'
+  | 'sql'
+  | 'nodejs'
 
 export type Tab = {
   key: TabKey
