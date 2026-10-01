@@ -5,6 +5,8 @@ import { reactTopics } from './react'
 import { reactNativeTopics } from './reactnative'
 import { nextjsTopics } from './nextjs'
 import { architectureTopics } from './architecture'
+import { sqlTopics } from './sql'
+import { nodejsTopics } from './nodejs'
 
 /*
  * Порядок тем «від простого до складного» — щоб вчити послідовно.
@@ -110,6 +112,7 @@ const REACT_ORDER = [
   'hoc',
   'flux',
   'redux',
+  'tanstack-query',
   'flow',
 ]
 
@@ -251,9 +254,11 @@ const NEXTJS_ORDER = [
   'next-hydration-errors-diagnosis',
   // Просунуті теми рендерингу
   'next-server-rendering-vs-rsc',
+  'next-streaming-ssr',
   'next-partial-prerendering',
   'next-static-plus-personalized-content',
   'next-rendering-strategy-choice',
+  'next-ssg-scale',
   // Кешування
   'next-caching-layers-overview',
   'next-old-cache-model-layers',
@@ -269,6 +274,25 @@ const NEXTJS_ORDER = [
   'next-large-app-architecture',
   'next-bff',
   'next-when-not-to-use',
+]
+
+// Від зʼєднань і агрегацій до індексів, оптимізації та транзакцій.
+const SQL_ORDER = [
+  'sql-joins',
+  'sql-union',
+  'sql-where-having',
+  'sql-indexes',
+  'sql-slow-query',
+  'sql-transactions-acid',
+]
+
+// Від асинхронності всередині Node до фонових воркерів і надійності.
+const NODE_ORDER = [
+  'node-worker-threads',
+  'node-streams',
+  'node-queues-workers',
+  'node-big-export',
+  'node-idempotency',
 ]
 
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
@@ -298,6 +322,8 @@ export const tabs: Tab[] = [
     topics: orderTopics(reactNativeTopics, RN_ORDER),
   },
   { key: 'nextjs', label: 'Next.js', topics: orderTopics(nextjsTopics, NEXTJS_ORDER) },
+  { key: 'nodejs', label: 'Node.js', topics: orderTopics(nodejsTopics, NODE_ORDER) },
+  { key: 'sql', label: 'SQL', topics: orderTopics(sqlTopics, SQL_ORDER) },
   // порядок тем вкладки — порядок в architecture.ts
   { key: 'architecture', label: 'Архітектура', topics: architectureTopics },
 ]

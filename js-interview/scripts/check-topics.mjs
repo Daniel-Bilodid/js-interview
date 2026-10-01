@@ -23,6 +23,8 @@ const FILES = {
   'react.ts': 'REACT_ORDER',
   'reactnative.ts': 'RN_ORDER',
   'nextjs.ts': 'NEXTJS_ORDER',
+  'nodejs.ts': 'NODE_ORDER',
+  'sql.ts': 'SQL_ORDER',
   'architecture.ts': null,
 }
 
