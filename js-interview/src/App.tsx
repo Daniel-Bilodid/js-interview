@@ -1,65 +1,19 @@
 import {
   BrowserRouter,
   Link,
-  NavLink,
   Navigate,
   Route,
   Routes,
   useParams,
 } from 'react-router-dom'
-import { tabs, getTab } from './data'
+import { getTab } from './data'
 import type { Depth, Tab } from './types'
+import { Header } from './components/Header'
 import { Sidebar } from './components/Sidebar'
 import { TopicView } from './components/TopicView'
 import { PracticeView } from './components/PracticeView'
 import { useLocalStorage, useStringSet } from './hooks/useLocalStorage'
 import { useTheme } from './hooks/useTheme'
-
-function Header({
-  theme,
-  onToggleTheme,
-}: {
-  theme: string
-  onToggleTheme: () => void
-}) {
-  return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white/80 px-5 py-3 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🧠</span>
-          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-            Interview Prep
-          </span>
-        </div>
-        <nav className="flex gap-1">
-          {tabs.map((t) => (
-            <NavLink
-              key={t.key}
-              to={`/${t.key}`}
-              className={({ isActive }) =>
-                [
-                  'rounded-lg px-3 py-1.5 text-sm font-medium transition',
-                  isActive
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
-                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
-                ].join(' ')
-              }
-            >
-              {t.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-      <button
-        onClick={onToggleTheme}
-        className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
-        title="Перемкнути тему"
-      >
-        {theme === 'dark' ? '☀️ Світла' : '🌙 Темна'}
-      </button>
-    </header>
-  )
-}
 
 function Welcome({
   tab,
