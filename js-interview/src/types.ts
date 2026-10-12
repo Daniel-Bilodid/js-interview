@@ -10,10 +10,11 @@
  *   steps        — покрокова інструкція (лише для процедурних тем «як зробити X»)
  *   seniorNotes  — senior-нюанси
  *
- * Старі теми (javascript / typescript / react / architecture) написані в
- * короткому форматі: description + gotchas. Обидва формати живуть поруч —
+ * Старі теми (частина typescript і architecture) ще написані в короткому
+ * форматі: description + gotchas. Обидва формати живуть поруч —
  * компоненти підставляють description замість simple, а gotchas замість
- * seniorNotes, якщо нових полів немає.
+ * seniorNotes, якщо нових полів немає. javascript і react вже повністю
+ * переведені на розгорнутий формат.
  */
 
 /** Наскільки глибоко розкривати тему. Обирає читач, зберігається в localStorage. */

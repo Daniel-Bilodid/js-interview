@@ -16,6 +16,12 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DATA = join(ROOT, 'src/data')
 
+/**
+ * Теми, що історично лежать у javascript.ts, але показуються у вкладці
+ * TypeScript і впорядковані через TS_ORDER (див. MOVED_TO_TS у data/index.ts).
+ */
+const MOVED_TO_TS = new Set(['utility-types', 'ts-access-modifiers'])
+
 /** файл даних → назва масиву порядку в index.ts (null = порядок за файлом) */
 const FILES = {
   'javascript.ts': 'JS_ORDER',
@@ -193,7 +199,7 @@ function checkTopic(topic, file, orders) {
   if (topic.gotchas) warn(id, 'gotchas разом із seniorNotes — прибери gotchas, воно для старого формату')
   if (topic.description) warn(id, 'description разом із simple — прибери description, воно для старого формату')
 
-  const orderName = FILES[file]
+  const orderName = MOVED_TO_TS.has(id) ? 'TS_ORDER' : FILES[file]
   if (orderName && !(orders[orderName] ?? []).includes(id))
     err(id, `id немає в ${orderName} (data/index.ts) — тема поїде в кінець вкладки`)
 }
