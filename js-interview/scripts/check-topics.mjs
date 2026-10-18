@@ -31,6 +31,8 @@ const FILES = {
   'nextjs.ts': 'NEXTJS_ORDER',
   'nodejs.ts': 'NODE_ORDER',
   'sql.ts': 'SQL_ORDER',
+  'backend.ts': 'BACKEND_ORDER',
+  'fintech.ts': 'FINTECH_ORDER',
   'architecture.ts': null,
 }
 

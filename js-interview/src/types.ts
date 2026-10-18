@@ -93,6 +93,8 @@ export type TabKey =
   | 'architecture'
   | 'sql'
   | 'nodejs'
+  | 'backend'
+  | 'fintech'
 
 export type Tab = {
   key: TabKey

@@ -7,6 +7,8 @@ import { nextjsTopics } from './nextjs'
 import { architectureTopics } from './architecture'
 import { sqlTopics } from './sql'
 import { nodejsTopics } from './nodejs'
+import { backendTopics } from './backend'
+import { fintechTopics } from './fintech'
 
 /*
  * Порядок тем «від простого до складного» — щоб вчити послідовно.
@@ -276,23 +278,108 @@ const NEXTJS_ORDER = [
   'next-when-not-to-use',
 ]
 
-// Від зʼєднань і агрегацій до індексів, оптимізації та транзакцій.
+// Від моделювання і запитів до індексів, транзакцій і масштабування.
 const SQL_ORDER = [
+  // Основи і моделювання
+  'sql-vs-nosql',
+  'sql-keys-constraints',
+  'sql-normalization',
+  // Запити
   'sql-joins',
   'sql-union',
   'sql-where-having',
+  'sql-window-functions',
+  'sql-views-procedures',
+  // Індекси і продуктивність
   'sql-indexes',
+  'sql-pg-index-types',
+  'sql-explain-plan',
   'sql-slow-query',
+  // Транзакції
   'sql-transactions-acid',
+  'sql-mvcc-vacuum',
+  'sql-node-transactions',
+  // Робота із застосунку
+  'sql-orm',
+  'sql-migrations',
+  'sql-batch-operations',
+  // Масштабування
+  'sql-replication-ha',
+  'sql-partitioning-sharding',
+  'sql-cap',
 ]
 
-// Від асинхронності всередині Node до фонових воркерів і надійності.
+// Від основ рантайму через Express і API до фонових воркерів і надійності.
 const NODE_ORDER = [
+  // Рантайм
+  'node-what-is',
+  'node-event-loop-phases',
+  'node-cluster',
   'node-worker-threads',
+  'node-event-emitter',
   'node-streams',
+  'node-env-config',
+  // Express і проєктування API
+  'node-express-middleware',
+  'node-error-handling',
+  'node-graceful-shutdown',
+  'node-rest-api-design',
+  'node-openapi',
+  'node-validation',
+  // Безпека
+  'node-cors',
+  'node-auth-jwt',
+  'node-auth-flow',
+  'node-rate-limiting',
+  // Продакшн
+  'node-caching',
+  'node-logging-monitoring',
+  // Фонова робота і надійність
   'node-queues-workers',
   'node-big-export',
   'node-idempotency',
+]
+
+// Брокери → контейнери й інфраструктура → тестування → Git.
+const BACKEND_ORDER = [
+  // Брокери повідомлень
+  'infra-message-brokers',
+  'infra-rabbitmq-model',
+  'infra-rabbitmq-reliability',
+  'infra-delivery-guarantees',
+  'infra-rabbitmq-vs-kafka',
+  // Docker і інфраструктура
+  'infra-docker-basics',
+  'infra-dockerfile-node',
+  'infra-docker-compose',
+  'infra-reverse-proxy',
+  // Тестування
+  'infra-test-types',
+  'infra-jest-mocks',
+  'infra-api-integration-tests',
+  'infra-code-coverage',
+  // Git
+  'infra-git-workflow',
+]
+
+// Регуляторика й онбординг → інтеграції → гроші → безпека.
+const FINTECH_ORDER = [
+  // KYC і онбординг
+  'fin-kyc-aml',
+  'fin-onboarding-state-machine',
+  'fin-diia-integration',
+  'fin-rn-onboarding-flow',
+  // Інтеграції
+  'fin-external-integrations',
+  'fin-webhooks',
+  // Гроші
+  'fin-money',
+  'fin-ledger',
+  'fin-saga',
+  // Безпека
+  'fin-otp-sca',
+  'fin-pii-protection',
+  'fin-mobile-security',
 ]
 
 // Теми про TypeScript, які історично лежать у файлі javascript.ts —
@@ -324,6 +411,12 @@ export const tabs: Tab[] = [
   { key: 'nextjs', label: 'Next.js', topics: orderTopics(nextjsTopics, NEXTJS_ORDER) },
   { key: 'nodejs', label: 'Node.js', topics: orderTopics(nodejsTopics, NODE_ORDER) },
   { key: 'sql', label: 'SQL', topics: orderTopics(sqlTopics, SQL_ORDER) },
+  {
+    key: 'backend',
+    label: 'Backend-інфра',
+    topics: orderTopics(backendTopics, BACKEND_ORDER),
+  },
+  { key: 'fintech', label: 'Fintech', topics: orderTopics(fintechTopics, FINTECH_ORDER) },
   // порядок тем вкладки — порядок в architecture.ts
   { key: 'architecture', label: 'Архітектура', topics: architectureTopics },
 ]

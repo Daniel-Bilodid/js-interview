@@ -64,6 +64,21 @@ const KEYWORDS = new Set([
   'Transform', 'Readable', 'Writable', 'Duplex', 'pipeline', 'pipe',
   'BullMQ', 'RabbitMQ', 'Piscina', 'Kafka', 'libuv', 'objectMode',
   'backpressure', 'highWaterMark', 'Celery', 'Sidekiq',
+  'V8', 'process', 'cluster', 'PM2', 'EventEmitter', 'Buffer',
+  'Express', 'Koa', 'Fastify', 'NestJS', 'middleware', 'Router',
+  'REST', 'GraphQL', 'OpenAPI', 'Swagger', 'AsyncAPI', 'OPTIONS',
+  'GET', 'POST', 'PUT', 'PATCH', 'CORS', 'JWT', 'JWKS', 'OAuth',
+  'zod', 'Joi', 'bcrypt', 'argon2', 'argon2id', 'SIGTERM', 'SIGINT',
+  'SIGKILL', 'Docker', 'Kubernetes', 'nginx', 'pino', 'Prometheus',
+  'Grafana', 'OpenTelemetry', 'AsyncLocalStorage', 'TTL', 'INCR',
+  'EXPIRE', 'MULTI', 'SCAN',
+  'MongoDB', 'Cassandra', 'JSONB', 'GIN', 'GiST', 'BRIN', 'PostGIS',
+  'WAL', 'Patroni', 'PgBouncer', 'COPY', 'CTE', 'OVER', 'ROW_NUMBER',
+  'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'Prisma', 'TypeORM', 'Sequelize',
+  'Knex', 'Kysely', 'Drizzle', 'MikroORM', 'CAP', 'REFRESH', 'COMMIT',
+  'ROLLBACK', 'BEGIN', 'Citus', 'ClickHouse',
+  'KYC', 'AML', 'PEP', 'HMAC', 'OTP', 'TOTP', 'Keychain', 'Keystore',
+  'KMS', 'HSM', 'Temporal', 'opossum', 'ledger', 'Dinero',
 ])
 
 // слова-кандидати (латиниця), ланцюжки з крапкою, виклики fn() та оператори
