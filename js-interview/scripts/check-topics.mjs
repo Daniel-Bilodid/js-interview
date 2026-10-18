@@ -102,7 +102,8 @@ function loadOrders() {
 
 function checkProse(id, field, text) {
   const limit = LIMITS[field]
-  if (text.includes('\n')) {
+  // definition може мати переноси: DefinitionText робить з рядків «• …» список
+  if (text.includes('\n') && field !== 'definition') {
     err(id, `${field}: має бути одним рядком без переносів — абзаци робить toParagraphs()`)
   }
   if (/\*\*|^\s*[-*]\s|`/m.test(text)) {
@@ -115,8 +116,11 @@ function checkProse(id, field, text) {
   if (!inRange(s, limit.sentences)) {
     err(id, `${field}: ${s} речень, треба ${limit.sentences.join('-')}`)
   }
-  if (!inRange(text.length, limit.chars)) {
-    err(id, `${field}: ${text.length} символів, треба ${limit.chars.join('-')}`)
+  // визначення зі списком «• …» (фази, етапи) може бути довшим
+  const chars =
+    field === 'definition' && text.includes('\n• ') ? [limit.chars[0], 1200] : limit.chars
+  if (!inRange(text.length, chars)) {
+    err(id, `${field}: ${text.length} символів, треба ${chars.join('-')}`)
   }
   const found = FILLER.find((f) => text.toLowerCase().includes(f))
   if (found) err(id, `${field}: штамп «${found}» — заміни на конкретику`)

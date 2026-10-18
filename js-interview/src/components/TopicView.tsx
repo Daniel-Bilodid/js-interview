@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { Depth, Tab, Topic } from '../types'
 import { CodeBlock } from './CodeBlock'
+import { DefinitionText } from './DefinitionText'
 import { DepthSwitch } from './DepthSwitch'
 import { RichText } from './RichText'
 import { toParagraphs } from '../utils/text'
@@ -188,9 +189,7 @@ export function TopicView({
                 <span>🎯</span>
                 {topic.definition ? 'Ідеальне визначення' : 'Коротко'}
               </p>
-              <p className="text-[15px] font-medium leading-7 text-slate-800 dark:text-slate-100">
-                <RichText text={s.definition} />
-              </p>
+              <DefinitionText text={s.definition} />
             </div>
           )}
         </header>

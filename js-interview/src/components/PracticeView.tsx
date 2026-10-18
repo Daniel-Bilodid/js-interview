@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Depth, Tab, Topic } from '../types'
+import { DefinitionText } from './DefinitionText'
 import { DepthSwitch } from './DepthSwitch'
 import { RichText } from './RichText'
 import { toParagraphs } from '../utils/text'
@@ -236,9 +237,7 @@ export function PracticeView({
                   <span>🎯</span>
                   {current.definition ? 'Ідеальна відповідь' : 'Коротко'}
                 </p>
-                <p className="text-[15px] font-medium leading-7 text-slate-800 dark:text-slate-100">
-                  <RichText text={s.definition} />
-                </p>
+                <DefinitionText text={s.definition} />
               </div>
             )}
 
