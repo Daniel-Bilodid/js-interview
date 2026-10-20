@@ -1662,4 +1662,163 @@ app.get('/metrics', async (req, res) => {
       'OpenTelemetry — стандарт трейсів, метрик і логів, незалежний від постачальника: автоінструментація для Node сама обгортає http, express, pg і amqplib і передає контекст у заголовку traceparent за стандартом W3C Trace Context, тож трейс проходить і через черги.',
     ],
   },
+
+  {
+    id: 'node-express-routing',
+    title: 'Що таке Express і як у ньому влаштований роутинг: req.params, req.query, req.body і Router?',
+    definition:
+      'Express — це мінімалістичний вебфреймворк для Node, який бере вбудований модуль http і додає до нього маршрути, middleware і зручні методи відповіді на кшталт res.json() і res.status(). Маршрут — це HTTP-метод, шлях і обробник, наприклад app.get(«/users/:id», handler). Дані із запиту Express розкладає по трьох місцях:\n• req.params — змінні частини шляху: для /users/42 це { id: «42» };\n• req.query — параметри після знака питання: для ?page=2 це { page: «2» };\n• req.body — тіло запиту POST, PUT чи PATCH, зʼявляється лише після express.json().\nМаршрути групують через express.Router(): окремий роутер на кожну частину API, який підключають до префікса через app.use(«/users», usersRouter).',
+    why: 'На голому модулі http доводиться самому розбирати URL, через if вибирати обробник за методом і шляхом, збирати тіло запиту зі стріму й вручну ставити заголовки відповіді. Express бере цю рутину на себе, і код описує лише те, що робить кожен ендпоінт.',
+    simple:
+      'Уяви поштове відділення: лист приходить з адресою, і працівник за цією адресою кладе його в потрібну скриньку. Express робить те саме із запитами — дивиться на метод і шлях і передає запит першому маршруту, який під них підходить. Маршрути перевіряються зверху вниз у порядку оголошення, тому /users/me треба оголосити раніше за /users/:id, інакше слово me потрапить у req.params.id. Усе, що приходить у params і query, завжди рядки, тож id перед запитом у базу треба перетворити на число або перевірити схемою. Тіло запиту надходить шматками через стрім, і поки його ніхто не прочитав, req.body порожній; express.json() якраз читає стрім і розбирає JSON. Відповідь формують методами res: res.status(201).json(дані) ставить статус і відправляє JSON, а res.sendStatus(204) — лише статус без тіла. Відповісти можна лише один раз, повторний виклик дає помилку про вже відправлені заголовки. Коли ендпоінтів стають десятки, їх розносять по файлах: кожен файл створює свій express.Router() і описує маршрути відносно свого префікса, а головний app.js лише підключає роутери. Так у файлі users.routes.js маршрут записується як router.get(«/:id»), а повний шлях /api/users/:id складається з префіксів.',
+    related: [
+      {
+        title: 'Модуль http без фреймворку',
+        text: 'Вбудований http.createServer дає один колбек на всі запити з обʼєктами req і res, які є стрімами. Метод, шлях і query треба розбирати вручну через new URL(req.url), тіло — збирати з подій data і end, а відповідь писати через res.writeHead і res.end. Express загортає саме ці обʼєкти, додаючи їм зручні методи.',
+      },
+      {
+        title: 'Порядок маршрутів і 404',
+        text: 'Express перебирає middleware і маршрути в порядку реєстрації та зупиняється на першому, який відповів. Тому обробник 404 ставлять після всіх маршрутів як app.use без шляху: до нього доходить лише запит, якого не забрав жоден маршрут. Конкретні шляхи на кшталт /users/me оголошують раніше за параметризовані /users/:id.',
+      },
+      {
+        title: 'Типи req у TypeScript',
+        text: 'Тип Request з @types/express має дженерики для params, тіла відповіді, тіла запиту і query, але це лише підказка компілятору: Express нічого з цього не перевіряє під час виконання. Тому тіло й query спершу проганяють через zod-схему, а тип беруть із неї через z.infer, щоб тип і реальна перевірка не розходились.',
+      },
+    ],
+    codeExamples: [
+      {
+        label: 'Маршрути і три джерела даних',
+        code: `import express from 'express';
+const app = express();
+app.use(express.json());               // без цього req.body буде undefined
+
+// GET /users/42/accounts?currency=UAH&page=2
+app.get('/users/:id/accounts', (req, res) => {
+  const userId = Number(req.params.id);          // '42' → 42, params завжди рядки
+  const { currency, page = '1' } = req.query;    // { currency: 'UAH', page: '2' }
+  res.json({ userId, currency, page: Number(page) });
+});
+
+// POST /users  з тілом { "email": "a@b.com" }
+app.post('/users', (req, res) => {
+  const { email } = req.body;
+  res.status(201).json({ id: 1, email });
+});
+
+// ❌ /users/me ніколи не спрацює — його перехопить /users/:id вище
+app.get('/users/:id', getUser);
+app.get('/users/me', getMe);
+// ✅ спершу конкретний шлях, потім параметризований`,
+      },
+      {
+        label: 'Розбиття API на роутери',
+        code: `// users.routes.js
+import { Router } from 'express';
+export const usersRouter = Router();
+
+usersRouter.get('/', listUsers);          // GET  /api/users
+usersRouter.get('/:id', getUser);         // GET  /api/users/:id
+usersRouter.post('/', auth, createUser);  // POST /api/users
+
+// вкладений роутер бачить :userId лише з mergeParams
+const accountsRouter = Router({ mergeParams: true });
+accountsRouter.get('/', listAccounts);    // GET /api/users/:userId/accounts
+usersRouter.use('/:userId/accounts', accountsRouter);
+
+// app.js
+app.use('/api/users', usersRouter);
+app.use('/api/payments', paymentsRouter);
+app.use((req, res) => res.status(404).json({ error: 'NOT_FOUND' }));`,
+      },
+    ],
+    seniorNotes: [
+      'Опція mergeParams: true у express.Router() потрібна вкладеним роутерам: без неї роутер, змонтований на /users/:userId/accounts, не бачить req.params.userId із батьківського шляху і отримує undefined.',
+      'У Express 4 req.query розбирав пакет qs у розширеному режимі, тож ?user[role]=admin ставав вкладеним обʼєктом, що відкривало дорогу до підміни полів. Express 5 за замовчуванням використовує простий парсер без вкладених обʼєктів; старий режим вмикають через app.set(«query parser», «extended»).',
+      'router.param(«id», fn) реєструє обробник, який виконується один раз для кожного запиту з :id у шляху. Ним зручно один раз завантажити сутність із бази й покласти в req, а не повторювати це в кожному маршруті роутера.',
+      'app.route(«/users/:id») дозволяє ланцюжком повісити get, patch і delete на один шлях без повторення рядка шляху, що зменшує ризик описатись в одному з маршрутів.',
+      'Express 5 прибрав метод req.param(name), який шукав значення одразу в params, body і query, а також res.send(число) для статусу: дані беруть із конкретного джерела, а статус без тіла відправляють через res.sendStatus.',
+    ],
+  },
+
+  {
+    id: 'node-express-layers',
+    title: 'Як структурувати Express-застосунок: роути, контролери, сервіси й репозиторії?',
+    definition:
+      'Код ділять на шари, і кожен відповідає лише за одне:\n• роут — привʼязує метод і шлях до контролера та вішає middleware на кшталт авторизації й валідації;\n• контролер — працює з HTTP: бере дані з req, викликає сервіс і перетворює результат на відповідь зі статусом;\n• сервіс — бізнес-логіка: правила, перевірки, транзакції, і він нічого не знає про req і res;\n• репозиторій — робота з базою: SQL-запити чи ORM, без бізнес-правил.\nЗалежності йдуть лише згори вниз: контролер викликає сервіс, сервіс — репозиторій, і ніколи навпаки. Навіщо: бізнес-логіку можна протестувати без HTTP і бази й викликати з воркера черги, а заміна бази чи фреймворку зачіпає лише один шар.',
+    why: 'Коли весь код ендпоінту живе в одному обробнику — розбір запиту, SQL, перевірка балансу, відправка листа, — його неможливо перевикористати й важко тестувати: щоб перевірити одне бізнес-правило, доводиться піднімати сервер і базу. А коли ту саму операцію треба запустити з воркера черги, логіку копіюють, і копії з часом розходяться.',
+    simple:
+      'Уяви ресторан: офіціант приймає замовлення й приносить страву, кухар готує, а комірник видає продукти зі складу. Офіціант не стоїть біля плити, а кухар не спілкується з гостями, і саме тому кухаря можна поставити готувати для доставки, нічого в ньому не змінюючи. В Express офіціант — це контролер: лише він знає про req і res, дістає з запиту id чи тіло, передає їх сервісу і вирішує, який статус повернути. Кухар — це сервіс: функція на кшталт createTransfer(fromId, toId, amount), яка перевіряє правила й керує транзакцією, але отримує звичайні аргументи, а не обʼєкт запиту. Комірник — це репозиторій: методи findById чи save, усередині яких живе SQL, і більше ніде в коді SQL не пишуть. Бізнес-помилки сервіс кидає як власні класи, наприклад InsufficientFundsError, а на HTTP-статус їх перетворює спільний error-middleware. Залежності сервіс отримує ззовні, через конструктор чи параметри, — це dependency injection, і в тесті замість справжнього репозиторію підставляють заглушку. Файли групують за фічами, а не за типом: папка payments містить свої роут, контролер, сервіс і репозиторій. Найчастіша помилка — передати req у сервіс: тоді сервіс знову привʼязаний до HTTP, і з воркера черги його вже не викличеш.',
+    related: [
+      {
+        title: 'Dependency injection',
+        text: 'Сервіс не імпортує конкретний пул бази сам, а отримує залежності ззовні: new TransferService(accountRepo, ledgerRepo). Збирають усе в одному місці на старті, у так званому composition root, вручну або контейнером на кшталт awilix чи вбудованим DI у NestJS. Так у тестах легко підставити фейковий репозиторій.',
+      },
+      {
+        title: 'NestJS як готова структура',
+        text: 'NestJS закріплює ці шари на рівні фреймворку: контролери з декораторами @Get і @Post, сервіси з @Injectable і DI-контейнер, який сам їх зʼєднує. На голому Express ту саму структуру тримають лише домовленістю в команді й код-ревʼю.',
+      },
+      {
+        title: 'Транзакції між репозиторіями',
+        text: 'Коли операція змінює кілька таблиць, транзакцією керує сервіс, бо лише він знає межі бізнес-операції. Він бере клієнта з пулу, виконує BEGIN і передає того самого клієнта в усі репозиторії, щоб їхні запити йшли в одній транзакції, а наприкінці робить COMMIT або ROLLBACK.',
+      },
+    ],
+    codeExamples: [
+      {
+        label: 'Чотири шари одного ендпоінту',
+        code: `// payments.routes.js — лише привʼязка шляху й middleware
+router.post('/transfers', auth, validate(transferSchema), controller.create);
+
+// payments.controller.js — лише HTTP
+export const makeController = (service) => ({
+  create: async (req, res) => {
+    const { toAccountId, amount } = req.body;
+    const transfer = await service.createTransfer(req.user.id, toAccountId, amount);
+    res.status(201).json(transfer);
+  },
+});
+
+// payments.service.js — бізнес-правила, нічого не знає про req/res
+export class PaymentsService {
+  constructor(accountsRepo) { this.accountsRepo = accountsRepo; }
+
+  async createTransfer(userId, toAccountId, amount) {
+    const from = await this.accountsRepo.findByUser(userId);
+    if (from.balance < amount) throw new InsufficientFundsError();
+    return this.accountsRepo.transfer(from.id, toAccountId, amount);
+  }
+}
+
+// accounts.repository.js — лише SQL
+export const makeAccountsRepo = (db) => ({
+  findByUser: (userId) =>
+    db.one('SELECT id, balance FROM accounts WHERE user_id = $1', [userId]),
+  // ...
+});`,
+      },
+      {
+        label: 'Товстий контролер проти шарів',
+        code: `// ❌ усе в одному обробнику: не протестуєш без сервера й бази,
+//    не викличеш із воркера черги
+app.post('/transfers', async (req, res) => {
+  const { rows } = await pool.query('SELECT balance FROM accounts WHERE user_id = $1', [req.user.id]);
+  if (rows[0].balance < req.body.amount) return res.status(422).json({ error: 'NO_MONEY' });
+  await pool.query('UPDATE ...');
+  res.status(201).end();
+});
+
+// ❌ сервіс отримує req — знову привʼязаний до HTTP
+await service.createTransfer(req);
+
+// ✅ сервіс отримує звичайні значення, статус вирішує контролер
+await service.createTransfer(req.user.id, req.body.toAccountId, req.body.amount);`,
+      },
+    ],
+    seniorNotes: [
+      'Сервіс повертає дані або кидає доменні помилки, а не HTTP-відповіді: статус вирішує error-middleware за класом помилки, наприклад NotFoundError дає 404, ConflictError — 409, InsufficientFundsError — 422.',
+      'Валідація форми запиту живе в middleware через zod-схему, а бізнес-перевірки на кшталт «чи вистачає коштів» — у сервісі, бо вони потрібні й тоді, коли операцію запускає воркер черги, а не HTTP-запит.',
+      'Репозиторій ховає особливості драйвера: перетворює snake_case колонок на camelCase і NUMERIC, який драйвер pg повертає рядком, на тип для грошей, тож решта коду не знає назв колонок і не ловить помилок округлення.',
+      'Шар не обовʼязковий заради шару: для простого CRUD сервіс, що лише передає виклик у репозиторій, — зайвий код. Але в фінтеху майже кожна операція має бізнес-правила, тому сервісний шар там є завжди.',
+      'Імпорт у зворотному напрямку, наприклад репозиторій імпортує сервіс, створює циклічну залежність: у CommonJS один із модулів отримує недовантажений exports, і помилка проявляється як TypeError: ... is not a function лише під час виконання.',
+    ],
+  },
 ]

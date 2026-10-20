@@ -338,6 +338,9 @@ const NODE_ORDER = [
   'node-queues-workers',
   'node-big-export',
   'node-idempotency',
+  // Express
+  'node-express-routing',
+  'node-express-layers',
 ]
 
 // Брокери → контейнери й інфраструктура → тестування → Git.
